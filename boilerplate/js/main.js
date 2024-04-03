@@ -122,3 +122,23 @@ window.onload = function(){
         .text(function(d){
             return 'Pop. ' + format(d.population);
         });} 
+
+// Week 9
+window.onload = setMap();
+
+function setMap(){
+    let promises = [d3.csv('data/JapanPop.csv'),
+                    d3.json('data/japan_minTable.topojson')
+                    ];
+    Promise.all(promises).then(callback);
+
+    function callback(data){
+        const csvData = data[0];
+        const japan = data[1];
+        console.log(japan);
+
+        let japanPrefectures = topojson.feature(japan, japan.objects.japan_minTable);
+        console.log(japanPrefectures);
+    };
+};
+
