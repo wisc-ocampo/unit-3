@@ -200,7 +200,7 @@ let chartBackground = chart
 
 let yScale = d3.scaleLinear()
     .range([463, 0])
-    .domain([0, 80]);
+    .domain([0, 6500]);
 
 let bars = chart
     .selectAll('bars')
