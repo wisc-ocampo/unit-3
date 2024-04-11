@@ -4,13 +4,12 @@
 (function(){
     
     // data joining
-const attrArray = ['gns_name', 'latitude', 'longitude', 
-    'year_2020', 'year_2015', 'year_2010', 'year_2005', 'year_2000',
-    'year_1995', 'year_1990', 'year_1985', 'year_1980', 'year_1975',
-    'year_1970', 'year_1965', 'year_1960', 'year_1955', 'year_1950',
-    'area'
+const attrArray = ['gns_name', 
+    'density_2020', 'density_2015', 'density_2010', 'density_2005', 'density_2000',
+    'density_1995', 'density_1990', 'density_1985', 'density_1980', 'density_1975',
+    'density_1970', 'density_1965', 'density_1960', 'density_1955', 'density_1950'
 ];
-    let expressed = attrArray[18];
+    let expressed = attrArray[8];
 
 window.onload = setMap();
 
