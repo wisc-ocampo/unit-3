@@ -309,6 +309,8 @@ function changeAttribute(attribute, csvData) {
     
     const prefectures = d3
         .selectAll('.prefectures')
+        .transition()
+        .duration(1000)
         .style('fill', function (d) {
         let value = d.properties[expressed];
         if (value) {
@@ -321,8 +323,13 @@ function changeAttribute(attribute, csvData) {
     const bars = d3
         .selectAll('.bar')
         .sort(function(a,b){
-            return b[expressed] - a[expressed];
+            return b[expressed] - a[expressed]
         })
+        .transition()
+        .delay(function(d,i){
+            return i * 20
+        })
+        .duration(500);
     
     updateChart(bars, csvData.length, colorScale)
 }
@@ -332,8 +339,11 @@ function updateChart(bars, n, colorScale) {
     bars.attr('x', function(d,i) {
         return i * (chartInnerWidth / n) + leftPadding;
     })
-        .attr('height', function (d,i) {
+        .attr('height', function(d,i) {
             return chartHeight - yScale(parseFloat(d[expressed])) + topBottomPadding;
+        })
+        .attr('y', function(d,i) {
+            return yScale(parseFloat(d[expressed])) + topBottomPadding; 
         })
         .style('fill', function(d) {
             let value = d[expressed];
