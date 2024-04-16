@@ -142,8 +142,9 @@ function setEnumerationUnits(japanPrefectures, map, path, colorScale){
             highlight(d.properties);
         })
         .on('mouseout', function(event,d){
-            dehighlight(d);
-        });
+            dehighlight(d.properties);
+        })
+        .on('mousemove', moveLabel);
 
     const desc = prefectures
         .append('desc')
@@ -240,7 +241,8 @@ function setChart(csvData, colorScale){
         })
         .on('mouseout', function(event,d){
             dehighlight(d);
-        });
+        })
+        .on('mousemove', moveLabel);
 
     const desc = bars
          .append('desc')
@@ -380,11 +382,15 @@ function updateChart(bars, n, colorScale) {
         .text('Population Density of ' + expressed[8] + ' (people/km^2)');
 }
 
+// HIGHLIGHT
+
 function highlight(props){
     const selected = d3
         .selectAll('.' + props.gns_name)
         .style('stroke', 'blue')
         .style('stroke-width', '2');
+
+    setLabel(props);
 };
 
 function dehighlight(props){
@@ -407,5 +413,48 @@ function dehighlight(props){
 
         return styleObject[styleName];
     };
+
+    d3.select('.infolabel').remove();
 };
+
+// LABEL
+
+function setLabel(props){
+    const labelAttribute = '<h1>' + props[expressed] +
+        '</h1><b>' + expressed + '</b>';
+
+    const infolabel = d3
+        .select('body')
+        .append('div')
+        .attr('class', 'infolabel')
+        .attr('id', props.gns_name + '_label')
+        .html(labelAttribute);
+
+    const prefectureName = infolabel
+        .append('div')
+        .attr('class', 'labelname')
+        .html(props.name);
+};
+
+function moveLabel(){
+    const labelWidth = d3
+        .select('.infolabel')
+        .node()
+        .getBoundingClientRect()
+        .width;
+
+    const x1 = event.clientX + 10,
+        y1 = event.clientY - 75,
+        x2 = event.clientX - labelWidth - 10,
+        y2 = event.clientY + 25;
+
+    const x = event.clientX > window.innerWidth - labelWidth - 20 ? x2 : x1;
+    const y = event.clientY < 75 ? y2 : y1;
+
+    d3
+        .select('.infolabel')
+        .style('left', x + 'px')
+        .style('top', y + 'px');
+};
+
 })();
