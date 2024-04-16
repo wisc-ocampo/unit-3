@@ -132,7 +132,7 @@ function setEnumerationUnits(japanPrefectures, map, path, colorScale){
         .attr('d', path)
         .style('fill', function(d){
             let value = d.properties[expressed];
-            if(value) {
+            if (value) {
                 return colorScale(d.properties[expressed]);
             } else {
                 return '#ccc';
