@@ -2,7 +2,8 @@
 
 // SCOPE
 (function(){
-    
+   
+// GLOBAL
     // data joining
 const attrArray = ['gns_name', 
     'density_2020', 'density_2015', 'density_2010', 'density_2005', 'density_2000',
@@ -10,6 +11,19 @@ const attrArray = ['gns_name',
     'density_1970', 'density_1965', 'density_1960', 'density_1955', 'density_1950'
 ];
     let expressed = attrArray[8];
+
+    const chartWidth = window.innerWidth * 0.5,
+        chartHeight = 700,
+        leftPadding = 25,
+        rightPadding = 2,
+        topBottomPadding = 5,
+        chartInnerWidth = chartWidth - leftPadding - rightPadding,
+        chartInnerHeight = chartHeight - topBottomPadding * 2,
+        translate = 'translate(' + leftPadding + ',' + topBottomPadding + ')';
+
+    const yScale = d3.scaleLinear()
+        .range([chartHeight, 0])
+        .domain([0, 5500]);
 
 window.onload = setMap();
 
@@ -20,14 +34,14 @@ function setMap(){
     const width = window.innerWidth * 0.4;
     const height = 960;
 
-    let map = d3
+    const map = d3
         .select('body')
         .append('svg')
         .attr('class', 'map')
         .attr('width', width)
         .attr('height', height);
 
-    let projection = d3
+    const projection = d3
         .geoAlbers()
         .center([0, 34.8755])
         .rotate([-138.461, 0, 0])
@@ -35,11 +49,11 @@ function setMap(){
         .scale(1500)
         .translate([width / 1.55, height / 2]);
 
-    let path = d3.geoPath().projection(projection);
+    const path = d3.geoPath().projection(projection);
 
 // DATA
-    let promises = [
-        d3.csv('data/JapanPopDensity.csv'),
+    const promises = [
+        d3.csv('data/JapanPopDensitySimple.csv'),
         d3.json('data/japan_minTable.topojson')
     ];
     Promise.all(promises).then(callback);
@@ -51,15 +65,17 @@ function setMap(){
         setGraticule (map, path);
 
         let japanPrefectures = topojson.feature(japan, japan.objects.japan_minTable).features;
-        console.log(japanPrefectures);
 
         japanPrefectures = joinData(japanPrefectures, csvData);
 
-        let colorScale = makeColorScale(csvData);
+        const colorScale = makeColorScale(csvData);
         
         setEnumerationUnits (japanPrefectures, map, path, colorScale);
 
         setChart(csvData, colorScale);
+
+        createDropdown(csvData);
+
     };
 };
 
@@ -67,11 +83,11 @@ function setMap(){
 function joinData(japanPrefectures, csvData){
         for (let i=0; i<csvData.length; i++){
             let csvPrefecture = csvData[i];
-            let csvKey = csvPrefecture.gns_name;
+            const csvKey = csvPrefecture.gns_name;
 
             for (let j=0; j<japanPrefectures.length; j++){
-                let geojsonProps = japanPrefectures[j].properties;
-                let geojsonKey = geojsonProps.gns_name;
+                const geojsonProps = japanPrefectures[j].properties;
+                const geojsonKey = geojsonProps.gns_name;
 
                 if (geojsonKey == csvKey){
                     attrArray.forEach(function(attr){
@@ -87,15 +103,15 @@ function joinData(japanPrefectures, csvData){
 // GRATICULE & DRAWING
 
 function setGraticule(map, path){
-    let graticule = d3.geoGraticule().step([5, 5]);
+    const graticule = d3.geoGraticule().step([5, 5]);
 
-    let gratBackground = map
+    const gratBackground = map
         .append('path')
         .datum(graticule.outline())
         .attr('class', 'gratBackground')
         .attr('d', path);
 
-    let gratLines = map
+    const gratLines = map
         .selectAll('.gratLines')
         .data(graticule.lines())
         .enter()
@@ -105,7 +121,7 @@ function setGraticule(map, path){
 };
        
 function setEnumerationUnits(japanPrefectures, map, path, colorScale){
-    let prefectures = map
+    const prefectures = map
         .selectAll('.prefectures')
         .data(japanPrefectures)
         .enter()
@@ -126,20 +142,24 @@ function setEnumerationUnits(japanPrefectures, map, path, colorScale){
 
 // COLOR
 function makeColorScale(data){
-    let colorClasses = [
-        '#fef0e9',
-        '#fdcc8a',
-        '#fc8d59',
-        '#e34a33',
-        '#b30000'
+    const colorClasses = [
+        '#ffffff',
+        '#f0f0f0',
+        '#d9d9d9',
+        '#bdbdbd',
+        '#969696',
+        '#737373',
+        '#525252',
+        '#252525',
+        '#000000'
     ];
 
-    let colorScale = d3.scaleQuantile()
-    // let colorScale = d3.scaleThreshold()
+    const colorScale = d3.scaleQuantile()
+    // const colorScale = d3.scaleThreshold()
         .range(colorClasses)
     
     // quantile
-    // let domainArray = [];
+    // const domainArray = [];
     // for (let i=0; i<data.length; i++){
     //     let val = parseFloat(data[i][expressed]);
     //     domainArray.push(val);
@@ -148,7 +168,7 @@ function makeColorScale(data){
     // colorScale.domain(domainArray);
 
     // equal interval
-    let minmax = [
+    const minmax = [
         d3.min(data, function(d) { return parseFloat(d[expressed]); }),
         d3.max(data, function(d) { return parseFloat(d[expressed]); })
     ];
@@ -157,13 +177,13 @@ function makeColorScale(data){
 
     // console.log(colorScale.quantiles())
 
-    // let domainArray = [];
+    // const domainArray = [];
     // for (let i=0; i<data.length; i++){
         // let val = parseFloat(data[i][expressed]);
         // domainArray.push(val);
     // };
 
-    // let clusters = ss.ckmeans(domainsArray,  5);
+    // const clusters = ss.ckmeans(domainsArray,  5);
     // domainArray = clusters.map(function(d){
     //     return d3.min(d);
     // });
@@ -174,35 +194,25 @@ function makeColorScale(data){
     return colorScale;
 };
 
-function  setChart(csvData, colorScale){
-    const chartWidth = window.innerWidth * 0.5,
-        chartHeight = 473,
-        leftPadding = 25,
-        rightPadding = 2,
-        topBottomPadding = 5,
-        chartInnerWidth = chartWidth - leftPadding - rightPadding,
-        chartInnerHeight = chartHeight - topBottomPadding * 2,
-        translate = 'translate(' + leftPadding + ',' + topBottomPadding + ')';
+// CHART
 
-let chart = d3
+function  setChart(csvData, colorScale){
+
+const chart = d3
     .select('body')
     .append('svg')
     .attr('width', chartWidth)
     .attr('height', chartHeight)
     .attr('class', 'chart');
 
-let chartBackground = chart
+const chartBackground = chart
     .append('rect')
     .attr('class', 'chartBackgound')
     .attr('width', chartInnerWidth)
     .attr('height', chartInnerHeight)
     .attr('transform', translate);
 
-let yScale = d3.scaleLinear()
-    .range([463, 0])
-    .domain([0, 6500]);
-
-let bars = chart
+const bars = chart
     .selectAll('bars')
     .data(csvData)
     .enter()
@@ -218,7 +228,7 @@ let bars = chart
         return i * (chartInnerWidth / csvData.length) + leftPadding;
     })
     .attr('height', function(d){
-        return 463 - yScale(parseFloat(d[expressed]));
+        return chartHeight - yScale(parseFloat(d[expressed]));
     })
     .attr('y', function(d){
         return yScale(parseFloat(d[expressed])) + topBottomPadding;
@@ -227,51 +237,117 @@ let bars = chart
         return colorScale(d[expressed]);
     });
 
-let numbers = chart
-    .selectAll('.numbers')
-    .data(csvData)
-    .enter()
-    .append('text')
-    .sort(function(a, b){
-        return a[expressed]-b[expressed]
-    })
-    .attr('class', function(d){
-        return 'numbers ' + d.gns_name;
-    })
-    .attr('text-anchor', 'middle')
-    .attr('x', function(d, i){
-        let fraction = chartWidth / csvData.length;
-        return i * fraction + (fraction - 1) / 2;
-    })
-    .attr('y', function(d){
-        return chartHeight - yScale(parseFloat(d[expressed])) + 15;
-    })
-    .text(function(d){
-        return d[expressed];
-    });
+// const numbers = chart
+//     .selectAll('.numbers')
+//     .data(csvData)
+//     .enter()
+//     .append('text')
+//     .sort(function(a, b){
+//         return a[expressed]-b[expressed]
+//     })
+//     .attr('class', function(d){
+//         return 'numbers ' + d.gns_name;
+//     })
+//     .attr('text-anchor', 'middle')
+//     .attr('x', function(d, i){
+//         const fraction = chartWidth / csvData.length;
+//         return i * fraction + (fraction - 1) / 2;
+//     })
+//     .attr('y', function(d){
+//         return chartHeight - yScale(parseFloat(d[expressed])) + 15;
+//     })
+//     .text(function(d){
+//         return d[expressed];
 
-let chartTitle = chart
+const chartTitle = chart
     .append('text')
     .attr('x', 40)
     .attr('y', 40)
     .attr('class', 'chartTitle')
-    .text('Population Density of ' + expressed[0] + ' per square kilometer');
+    .text('Population Density of ' + expressed[0] + '. (person/km^2)');
 
-let yAxis = d3.axisLeft()
+const yAxis = d3.axisLeft()
     .scale(yScale);
 
-let axis = chart
+const axis = chart
     .append('g')
     .attr('class', 'axis')
     .attr('transform', translate)
     .call(yAxis);
 
-let chartFrame = chart
+const chartFrame = chart
     .append('rect')
     .attr('class', 'chartFrame')
     .attr('width', chartInnerWidth)
     .attr('height', chartInnerHeight)
     .attr('transform',translate);
 };
+
+// SELECTION
+
+function createDropdown(csvData){
+    const dropdown = d3
+        .select('body')
+        .append('select')
+        .attr('class', 'dropdown')
+        .on('change', function(){
+            changeAttribute(this.value, csvData)
+        });
+
+    const titleOption = dropdown
+        .append('option')
+        .attr('class', 'titleOption')
+        .attr('disabled', 'true')
+        .text('Select Attribute');
+
+    const attrOptions  = dropdown
+        .selectAll('attrOptions')
+        .data(attrArray)
+        .enter()
+        .append('option')
+        .attr('value', function(d){
+            return d
+        })
+        .text(function(d){
+            return d
+        });
+};
+
+function changeAttribute(attribute, csvData) {
+    expressed = attribute;
+    const colorScale = makeColorScale(csvData);
+    const prefectures = d3
+        .selectAll('.prefectures')
+        .style('fill', function (d) {
+        let value = d.properties[expressed];
+        if (value) {
+            return colorScale(d.properties[expressed]);
+        } else {
+            return '#ccc';
+        }
+    });
+    const bars = d3
+        .selectAll('.bar')
+        .sort(function(a,b){
+            return b[expressed] - a[expressed];
+        })
+        .attr('x', function(d,i){
+            return i * (chartInnerWidth / csvData.length) + leftPadding;
+        })
+        .attr('height',function(d,i){
+            return chartHeight - yScale(parseFloat(d[expressed]));
+        })
+        .attr('y', function(d,i){
+            return yScale(parseFloat(d[expressed])) + topBottomPadding;
+        })
+        .style('fill', function(d){
+            let value = d[expressed];
+            if(value) {
+                return colorScale(value);
+            } else {
+                return '#ccc';
+            }
+        });
+}
 
 })();
