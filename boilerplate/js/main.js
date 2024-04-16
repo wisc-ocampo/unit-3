@@ -137,7 +137,18 @@ function setEnumerationUnits(japanPrefectures, map, path, colorScale){
             } else {
                 return '#ccc';
             }
+        })
+        .on('mouseover', function(event,d){
+            highlight(d.properties);
+        })
+        .on('mouseout', function(event,d){
+            dehighlight(d);
         });
+
+    const desc = prefectures
+        .append('desc')
+        .text('{"stroke": "#000", "stroke-width": "0.5px"}');
+
 };
 
 // COLOR
@@ -198,32 +209,42 @@ function makeColorScale(data){
 
 function setChart(csvData, colorScale){
 
-const chart = d3
-    .select('body')
-    .append('svg')
-    .attr('width', chartWidth)
-    .attr('height', chartHeight)
-    .attr('class', 'chart');
+    const chart = d3
+        .select('body')
+        .append('svg')
+        .attr('width', chartWidth)
+        .attr('height', chartHeight)
+        .attr('class', 'chart');
 
-const chartBackground = chart
-    .append('rect')
-    .attr('class', 'chartBackgound')
-    .attr('width', chartInnerWidth)
-    .attr('height', chartInnerHeight)
-    .attr('transform', translate);
+    const chartBackground = chart
+        .append('rect')
+        .attr('class', 'chartBackgound')
+        .attr('width', chartInnerWidth)
+        .attr('height', chartInnerHeight)
+        .attr('transform', translate);
 
-const bars = chart
-    .selectAll('bars')
-    .data(csvData)
-    .enter()
-    .append('rect')
-    .sort(function(a, b){
-        return b[expressed]-a[expressed]
-    })
-    .attr('class', function(d){
-        return 'bar ' + d.gns_name;
-    })
-    .attr('width', chartInnerWidth / csvData.length - 1)
+    const bars = chart
+        .selectAll('bars')
+        .data(csvData)
+        .enter()
+        .append('rect')
+        .sort(function(a, b){
+            return b[expressed]-a[expressed]
+        })
+        .attr('class', function(d){
+            return 'bar ' + d.gns_name;
+        })
+        .attr('width', chartInnerWidth / csvData.length - 1)
+        .on('mouseover', function(event,d){
+            highlight(d);
+        })
+        .on('mouseout', function(event,d){
+            dehighlight(d);
+        });
+
+    const desc = bars
+         .append('desc')
+         .text('{"stroke": "none", "stroke-width": "0px"}');
 
 // const numbers = chart
 //     .selectAll('.numbers')
@@ -359,4 +380,32 @@ function updateChart(bars, n, colorScale) {
         .text('Population Density of ' + expressed[8] + ' (people/km^2)');
 }
 
+function highlight(props){
+    const selected = d3
+        .selectAll('.' + props.gns_name)
+        .style('stroke', 'blue')
+        .style('stroke-width', '2');
+};
+
+function dehighlight(props){
+    const selected = d3
+        .selectAll('.' + props.gns_name)
+        .style('stroke', function(){
+            return getStyle(this, 'stroke')
+        })
+        .style('stroke-width', function(){
+            return getStyle(this, 'stroke-width')
+        });
+
+    function getStyle(element,styleName){
+        const styleText = d3
+            .select(element)
+            .select('desc')
+            .text();
+
+        const styleObject = JSON.parse(styleText);
+
+        return styleObject[styleName];
+    };
+};
 })();
