@@ -196,7 +196,7 @@ function makeColorScale(data){
 
 // CHART
 
-function  setChart(csvData, colorScale){
+function setChart(csvData, colorScale){
 
 const chart = d3
     .select('body')
@@ -224,18 +224,6 @@ const bars = chart
         return 'bar ' + d.gns_name;
     })
     .attr('width', chartInnerWidth / csvData.length - 1)
-    .attr('x', function(d, i){
-        return i * (chartInnerWidth / csvData.length) + leftPadding;
-    })
-    .attr('height', function(d){
-        return chartHeight - yScale(parseFloat(d[expressed]));
-    })
-    .attr('y', function(d){
-        return yScale(parseFloat(d[expressed])) + topBottomPadding;
-    })
-    .style('fill', function(d){
-        return colorScale(d[expressed]);
-    });
 
 // const numbers = chart
 //     .selectAll('.numbers')
@@ -264,7 +252,8 @@ const chartTitle = chart
     .attr('x', 40)
     .attr('y', 40)
     .attr('class', 'chartTitle')
-    .text('Population Density of ' + expressed[0] + '. (person/km^2)');
+
+    updateChart(bars, csvData.length, colorScale);
 
 const yAxis = d3.axisLeft()
     .scale(yScale);
@@ -314,8 +303,10 @@ function createDropdown(csvData){
 };
 
 function changeAttribute(attribute, csvData) {
+    
     expressed = attribute;
     const colorScale = makeColorScale(csvData);
+    
     const prefectures = d3
         .selectAll('.prefectures')
         .style('fill', function (d) {
@@ -326,28 +317,36 @@ function changeAttribute(attribute, csvData) {
             return '#ccc';
         }
     });
+    
     const bars = d3
         .selectAll('.bar')
         .sort(function(a,b){
             return b[expressed] - a[expressed];
         })
-        .attr('x', function(d,i){
-            return i * (chartInnerWidth / csvData.length) + leftPadding;
+    
+    updateChart(bars, csvData.length, colorScale)
+}
+
+function updateChart(bars, n, colorScale) {
+    
+    bars.attr('x', function(d,i) {
+        return i * (chartInnerWidth / n) + leftPadding;
+    })
+        .attr('height', function (d,i) {
+            return chartHeight - yScale(parseFloat(d[expressed])) + topBottomPadding;
         })
-        .attr('height',function(d,i){
-            return chartHeight - yScale(parseFloat(d[expressed]));
-        })
-        .attr('y', function(d,i){
-            return yScale(parseFloat(d[expressed])) + topBottomPadding;
-        })
-        .style('fill', function(d){
+        .style('fill', function(d) {
             let value = d[expressed];
-            if(value) {
+            if (value) {
                 return colorScale(value);
             } else {
                 return '#ccc';
             }
         });
+
+    const chartTitle = d3
+        .select('.chartTitle')
+        .text('Population Density of ' + expressed[8] + ' (people/km^2)');
 }
 
 })();
