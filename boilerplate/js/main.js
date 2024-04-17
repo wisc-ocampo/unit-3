@@ -8,10 +8,11 @@
 
 // FUNCTION VARIABLES
     
-    const attrArray = ['gns_name', 
-        'density_2020', 'density_2015', 'density_2010', 'density_2005', 'density_2000',
-        'density_1995', 'density_1990', 'density_1985', 'density_1980', 'density_1975',
-        'density_1970', 'density_1965', 'density_1960', 'density_1955', 'density_1950'
+    const attrArray = [
+        'gns_name', 'density_2020', 'density_2015', 'density_2010',
+        'density_2005', 'density_2000', 'density_1995', 'density_1990',
+        'density_1985', 'density_1980', 'density_1975', 'density_1970',
+        'density_1965', 'density_1960', 'density_1955', 'density_1950'
     ];
     
     let expressed = attrArray[1];
@@ -216,7 +217,7 @@ function setEnumerationUnits(japanPrefectures, map, path, interpolation){
 function makeColorScale(data){
 
     const interpolation = d3
-        .scaleSequentialLog([51,6412], d3.interpolateMagma);
+        .scaleSequentialLog([51,6412], d3.interpolateRdPu);
     return interpolation
 };
 
@@ -317,6 +318,8 @@ function createDropdown(csvData){
             return d
         });
 };
+
+// UPDATE VIEW
 
 function changeAttribute(attribute, csvData) {
     
