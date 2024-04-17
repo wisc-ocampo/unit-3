@@ -81,45 +81,49 @@ function setMap(){
             b5 = data[4],
             japan = data[5];
 
+console.log(b0)
+
         setGraticule (map, path);
 
-        let neB0 = topojson
-            .feature(b0, b0.objects.bathymetry0),
-            neB1 = topojson
-            .feature(b1, b1.objects.bathymetry1),
-            neB3 = topojson
-            .feature(b3, b3.objects.bathymetry3),
-            neB5 = topojson
-            .feature(b5, b5.objects.bathymetry5),
+        // let neB0 = topojson
+            // .feature(b0, b0.objects.bathymetry0),
+        //     neB1 = topojson
+        //     .feature(b1, b1.objects.bathymetry1),
+        //     neB3 = topojson
+        //     .feature(b3, b3.objects.bathymetry3),
+        //     neB5 = topojson
+        //     .feature(b5, b5.objects.bathymetry5),
             japanPrefectures = topojson
                 .feature(japan, japan.objects.neJapan).features;
 
-        let drawB0 = map
-             .append('path')
-             .datum(neB0)
-             .attr('class', 'drawB0')
-             .attr('d', path),
-            drawB1 = map
-             .append('path')
-             .datum(neB1)
-             .attr('class', 'drawB1')
-             .attr('d', path),
-            drawB3 = map
-             .append('path')
-             .datum(neB3)
-             .attr('class', 'drawB3')
-             .attr('d', path),
-            drawB5 = map
-             .append('path')
-             .datum(neB5)
-             .attr('class', 'drawB5')
-             .attr('d', path);
+// console.log(b0)
 
-        console.log(neB0);
-        console.log(neB1);
-        console.log(neB3);
-        console.log(neB5);
-        console.log(japanPrefectures);
+        // let drawB0 = map
+        //      .append('path')
+        //      .datum(neB0)
+        //      .attr('class', 'drawB0')
+        //      .attr('d', path),
+        //     drawB1 = map
+        //      .append('path')
+        //      .datum(neB1)
+        //      .attr('class', 'drawB1')
+        //      .attr('d', path),
+        //     drawB3 = map
+        //      .append('path')
+        //      .datum(neB3)
+        //      .attr('class', 'drawB3')
+        //      .attr('d', path),
+        //     drawB5 = map
+        //      .append('path')
+        //      .datum(neB5)
+        //      .attr('class', 'drawB5')
+        //      .attr('d', path);
+
+        // console.log(neB0);
+        // console.log(neB1);
+        // console.log(neB3);
+        // console.log(neB5);
+        // console.log(japanPrefectures);
 
             japanPrefectures = joinData(japanPrefectures, csvData);
 
