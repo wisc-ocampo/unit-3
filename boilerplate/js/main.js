@@ -378,6 +378,7 @@ function updateChart(bars, n, interpolation) {
 // HIGHLIGHT
 
 function highlight(props){
+
     const selected = d3
         .selectAll('.' + props.gns_name)
         .style('stroke', 'blue')
@@ -387,6 +388,7 @@ function highlight(props){
 };
 
 function dehighlight(props){
+
     const selected = d3
         .selectAll('.' + props.gns_name)
         .style('stroke', function(){
