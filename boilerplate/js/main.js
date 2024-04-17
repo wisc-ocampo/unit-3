@@ -9,13 +9,13 @@
 // FUNCTION VARIABLES
     
     const attrArray = [
-        'gns_name', 'density_2020', 'density_2015', 'density_2010',
-        'density_2005', 'density_2000', 'density_1995', 'density_1990',
-        'density_1985', 'density_1980', 'density_1975', 'density_1970',
-        'density_1965', 'density_1960', 'density_1955', 'density_1950'
+        '2020', '2015', '2010',
+        '2005', '2000', '1995', '1990',
+        '1985', '1980', '1975', '1970',
+        '1965', '1960', '1955', '1950'
     ];
     
-    let expressed = attrArray[1];
+    let expressed = attrArray[0];
 
     const chartWidth = window.innerWidth * 0.5,
         chartHeight = 700,
@@ -64,9 +64,9 @@ function setMap(){
     const promises = [
         d3.csv('data/JapanPopDensitySimple.csv'),
         d3.json('data/neB0.topojson'),
-        d3.json('data/neB1000.topojson'),
-        d3.json('data/neB3000.topojson'),
-        d3.json('data/neB5000.topojson'),
+        d3.json('data/neB1k.topojson'),
+        d3.json('data/neB3k.topojson'),
+        d3.json('data/neB5k.topojson'),
         d3.json('data/neJapan.topojson')
     ];
     Promise.all(promises).then(callback);
@@ -82,45 +82,41 @@ function setMap(){
             b5 = data[4],
             japan = data[5];
 
+console.log(b0)
+
         setGraticule (map, path);
 
-        // let neB0 = topojson
-        //     .feature(b0, b0.objects.bathymetry0),
-        //     neB1 = topojson
-        //     .feature(b1, b1.objects.bathymetry1),
-        //     neB3 = topojson
-        //     .feature(b3, b3.objects.bathymetry3),
-        //     neB5 = topojson
-        //     .feature(b5, b5.objects.bathymetry5),
-        let japanPrefectures = topojson
+        let neB0 = topojson
+            .feature(b0, b0.objects.neB0),
+            neB1 = topojson
+            .feature(b1, b1.objects.neB1k),
+            neB3 = topojson
+            .feature(b3, b3.objects.neB3k),
+            neB5 = topojson
+            .feature(b5, b5.objects.neB5k),
+            japanPrefectures = topojson
                 .feature(japan, japan.objects.neJapan).features;
 
-        // let drawB0 = map
-        //      .append('path')
-        //      .datum(neB0)
-        //      .attr('class', 'drawB0')
-        //      .attr('d', path),
-        //     drawB1 = map
-        //      .append('path')
-        //      .datum(neB1)
-        //      .attr('class', 'drawB1')
-        //      .attr('d', path),
-        //     drawB3 = map
-        //      .append('path')
-        //      .datum(neB3)
-        //      .attr('class', 'drawB3')
-        //      .attr('d', path),
-        //     drawB5 = map
-        //      .append('path')
-        //      .datum(neB5)
-        //      .attr('class', 'drawB5')
-        //      .attr('d', path);
-        //
-        // console.log(neB0);
-        // console.log(neB1);
-        // console.log(neB3);
-        // console.log(neB5);
-        // console.log(japanPrefectures);
+        let drawB0 = map
+             .append('path')
+             .datum(neB0)
+             .attr('class', 'drawB0')
+             .attr('d', path),
+            drawB1 = map
+             .append('path')
+             .datum(neB1)
+             .attr('class', 'drawB1')
+             .attr('d', path),
+            drawB3 = map
+             .append('path')
+             .datum(neB3)
+             .attr('class', 'drawB3')
+             .attr('d', path),
+            drawB5 = map
+             .append('path')
+             .datum(neB5)
+             .attr('class', 'drawB5')
+             .attr('d', path);
 
             japanPrefectures = joinData(japanPrefectures, csvData);
 
@@ -136,11 +132,11 @@ function setMap(){
 function joinData(japanPrefectures, csvData){
         for (let i=0; i<csvData.length; i++){
             let csvPrefecture = csvData[i];
-            const csvKey = csvPrefecture.gns_name;
+            const csvKey = csvPrefecture.name;
 
             for (let j=0; j<japanPrefectures.length; j++){
                 const geojsonProps = japanPrefectures[j].properties;
-                const geojsonKey = geojsonProps.gns_name;
+                const geojsonKey = geojsonProps.name;
 
                 if (geojsonKey == csvKey){
                     attrArray.forEach(function(attr){
@@ -185,7 +181,7 @@ function setEnumerationUnits(japanPrefectures, map, path, interpolation){
         .enter()
         .append('path')
         .attr('class', function(d){
-            return 'prefectures ' + d.properties.gns_name;
+            return 'prefectures ' + d.properties.name;
         })
         .attr('d', path)
         .style('fill', function(d){
@@ -249,7 +245,7 @@ function setChart(csvData, interpolation){
             return b[expressed]-a[expressed]
         })
         .attr('class', function(d){
-            return 'bar ' + d.gns_name;
+            return 'bar ' + d.name;
         })
         .attr('width', chartInnerWidth / csvData.length - 1)
         .on('mouseover', function(event,d){
@@ -383,7 +379,7 @@ function updateChart(bars, n, interpolation) {
 function highlight(props){
 
     const selected = d3
-        .selectAll('.' + props.gns_name)
+        .selectAll('.' + props.name)
         .style('stroke', 'blue')
         .style('stroke-width', '2');
 
@@ -393,7 +389,7 @@ function highlight(props){
 function dehighlight(props){
 
     const selected = d3
-        .selectAll('.' + props.gns_name)
+        .selectAll('.' + props.name)
         .style('stroke', function(){
             return getStyle(this, 'stroke')
         })
@@ -425,7 +421,7 @@ function setLabel(props){
         .select('body')
         .append('div')
         .attr('class', 'infolabel')
-        .attr('id', props.gns_name + '_label')
+        .attr('id', props.name + '_label')
         .html(labelAttribute);
 
     const prefectureName = infolabel
