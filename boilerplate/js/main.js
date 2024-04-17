@@ -8,18 +8,11 @@
 
 // FUNCTION VARIABLES
     
-<<<<<<< Updated upstream
-    const attrArray = ['gns_name', 
-        'density_2020', 'density_2015', 'density_2010', 'density_2005', 'density_2000',
-        'density_1995', 'density_1990', 'density_1985', 'density_1980', 'density_1975',
-        'density_1970', 'density_1965', 'density_1960', 'density_1955', 'density_1950'
-=======
     const attrArray = [
         '2020', '2015', '2010',
         '2005', '2000', '1995', '1990',
         '1985', '1980', '1975', '1970',
         '1965', '1960', '1955', '1950'
->>>>>>> Stashed changes
     ];
     
     let expressed = attrArray[0];
@@ -32,7 +25,7 @@
         chartInnerHeight = chartHeight,
         translate = 'translate(' + leftPadding + ')';
 
-    const yScale = d3.scaleLinear()
+    const yScale = d3.scaleSequentialLog()
         .range([chartHeight, 0])
         .domain([51, 6412]);
 
@@ -96,18 +89,6 @@ console.log(b0)
         let neB0 = topojson
             .feature(b0, b0.objects.neB0),
             neB1 = topojson
-<<<<<<< Updated upstream
-            .feature(b1, b1.objects.neB1000),
-            neB3 = topojson
-            .feature(b3, b3.objects.neB3000),
-            neB5 = topojson
-            .feature(b5, b5.objects.neB5000),
-            japanPrefectures = topojson
-                .feature(japan, japan.objects.neJapan).features;
-
-console.log(b0)
-
-=======
             .feature(b1, b1.objects.neB1k),
             neB3 = topojson
             .feature(b3, b3.objects.neB3k),
@@ -116,7 +97,6 @@ console.log(b0)
             japanPrefectures = topojson
                 .feature(japan, japan.objects.neJapan).features;
 
->>>>>>> Stashed changes
         let drawB0 = map
              .append('path')
              .datum(neB0)
@@ -137,15 +117,6 @@ console.log(b0)
              .datum(neB5)
              .attr('class', 'drawB5')
              .attr('d', path);
-<<<<<<< Updated upstream
-
-        console.log(neB0);
-        console.log(neB1);
-        console.log(neB3);
-        console.log(neB5);
-        console.log(japanPrefectures);
-=======
->>>>>>> Stashed changes
 
             japanPrefectures = joinData(japanPrefectures, csvData);
 
@@ -242,7 +213,7 @@ function setEnumerationUnits(japanPrefectures, map, path, interpolation){
 function makeColorScale(data){
 
     const interpolation = d3
-        .scaleSequentialLog([51,6412], d3.interpolateMagma);
+        .scaleSequentialLog([51,6412], d3.interpolateRdPu);
     return interpolation
 };
 
@@ -344,6 +315,8 @@ function createDropdown(csvData){
         });
 };
 
+// UPDATE VIEW
+
 function changeAttribute(attribute, csvData) {
     
     expressed = attribute;
@@ -404,6 +377,7 @@ function updateChart(bars, n, interpolation) {
 // HIGHLIGHT
 
 function highlight(props){
+
     const selected = d3
         .selectAll('.' + props.name)
         .style('stroke', 'blue')
@@ -413,6 +387,7 @@ function highlight(props){
 };
 
 function dehighlight(props){
+
     const selected = d3
         .selectAll('.' + props.name)
         .style('stroke', function(){
