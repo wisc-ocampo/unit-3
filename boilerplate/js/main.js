@@ -1,34 +1,38 @@
 // Ocampo, Francisco - April 2024
 
-// NO GLOBAL SCOPE
+
+// SETTING FUNCTION SCOPE
 
 (function(){
-   
-// FUNCTION SCOPE
-    // data joining
-const attrArray = ['gns_name', 
-    'density_2020', 'density_2015', 'density_2010', 'density_2005', 'density_2000',
-    'density_1995', 'density_1990', 'density_1985', 'density_1980', 'density_1975',
-    'density_1970', 'density_1965', 'density_1960', 'density_1955', 'density_1950'
-];
+
+
+// FUNCTION VARIABLES
+    
+    const attrArray = ['gns_name', 
+        'density_2020', 'density_2015', 'density_2010', 'density_2005', 'density_2000',
+        'density_1995', 'density_1990', 'density_1985', 'density_1980', 'density_1975',
+        'density_1970', 'density_1965', 'density_1960', 'density_1955', 'density_1950'
+    ];
+    
     let expressed = attrArray[1];
 
     const chartWidth = window.innerWidth * 0.5,
         chartHeight = 700,
         leftPadding = 25,
         rightPadding = 2,
-        topBottomPadding = 5,
         chartInnerWidth = chartWidth - leftPadding - rightPadding,
-        chartInnerHeight = chartHeight - topBottomPadding * 2,
-        translate = 'translate(' + leftPadding + ',' + topBottomPadding + ')';
+        chartInnerHeight = chartHeight,
+        translate = 'translate(' + leftPadding + ')';
 
     const yScale = d3.scaleLinear()
         .range([chartHeight, 0])
         .domain([51, 6412]);
 
-window.onload = setMap();
+    window.onload = setMap();
+
 
 // MAP CREATION
+
 function setMap(){
 
     // projection
@@ -50,37 +54,84 @@ function setMap(){
         .scale(1500)
         .translate([width / 1.55, height / 2]);
 
-    const path = d3.geoPath().projection(projection);
+    const path = d3
+        .geoPath().projection(projection);
+
 
 // DATA
+
     const promises = [
         d3.csv('data/JapanPopDensitySimple.csv'),
-        d3.json('data/japan_minTable.topojson')
+        d3.json('data/neB0.topojson'),
+        d3.json('data/neB1000.topojson'),
+        d3.json('data/neB3000.topojson'),
+        d3.json('data/neB5000.topojson'),
+        d3.json('data/neJapan.topojson')
     ];
     Promise.all(promises).then(callback);
 
     function callback(data){
-        const csvData = data[0];
-        const japan = data[1];
+
+    // implementation
+
+        const csvData = data[0],
+            b0 = data[1],
+            b1 = data[2],
+            b3 = data[3],
+            b5 = data[4],
+            japan = data[5];
 
         setGraticule (map, path);
 
-        let japanPrefectures = topojson.feature(japan, japan.objects.japan_minTable).features;
+        let neB0 = topojson
+            .feature(b0, b0.objects.bathymetry0),
+            neB1 = topojson
+            .feature(b1, b1.objects.bathymetry1),
+            neB3 = topojson
+            .feature(b3, b3.objects.bathymetry3),
+            neB5 = topojson
+            .feature(b5, b5.objects.bathymetry5),
+            japanPrefectures = topojson
+                .feature(japan, japan.objects.neJapan).features;
 
-        japanPrefectures = joinData(japanPrefectures, csvData);
+        let drawB0 = map
+             .append('path')
+             .datum(neB0)
+             .attr('class', 'drawB0')
+             .attr('d', path),
+            drawB1 = map
+             .append('path')
+             .datum(neB1)
+             .attr('class', 'drawB1')
+             .attr('d', path),
+            drawB3 = map
+             .append('path')
+             .datum(neB3)
+             .attr('class', 'drawB3')
+             .attr('d', path),
+            drawB5 = map
+             .append('path')
+             .datum(neB5)
+             .attr('class', 'drawB5')
+             .attr('d', path);
+
+        console.log(neB0);
+        console.log(neB1);
+        console.log(neB3);
+        console.log(neB5);
+        console.log(japanPrefectures);
+
+            japanPrefectures = joinData(japanPrefectures, csvData);
 
         const interpolation = makeColorScale(csvData);
-        
         setEnumerationUnits (japanPrefectures, map, path, interpolation);
-
         setChart(csvData, interpolation);
-
         createDropdown(csvData);
-
     };
 };
 
-    // join data
+// join data
+
 function joinData(japanPrefectures, csvData){
         for (let i=0; i<csvData.length; i++){
             let csvPrefecture = csvData[i];
@@ -98,10 +149,12 @@ function joinData(japanPrefectures, csvData){
                 };
             };
         };
+
     return japanPrefectures;
 };
 
-// GRATICULE & DRAWING
+
+// GRATICULE
 
 function setGraticule(map, path){
     const graticule = d3.geoGraticule().step([5, 5]);
@@ -120,7 +173,10 @@ function setGraticule(map, path){
         .attr('class', 'gratLines')
         .attr('d', path);
 };
-       
+
+
+// PREFECTURES
+
 function setEnumerationUnits(japanPrefectures, map, path, interpolation){
     const prefectures = map
         .selectAll('.prefectures')
@@ -139,6 +195,8 @@ function setEnumerationUnits(japanPrefectures, map, path, interpolation){
                 return '#ccc';
             }
         })
+    //
+    // mouse interactions
         .on('mouseover', function(event,d){
             highlight(d.properties);
         })
@@ -150,16 +208,18 @@ function setEnumerationUnits(japanPrefectures, map, path, interpolation){
     const desc = prefectures
         .append('desc')
         .text('{"stroke": "#000", "stroke-width": "0.5px"}');
-
 };
 
-// COLOR
+
+// COLOR INTERPOLATION
+
 function makeColorScale(data){
 
     const interpolation = d3
         .scaleSequentialLog([51,6412], d3.interpolateMagma);
     return interpolation
 };
+
 
 // CHART
 
@@ -296,10 +356,10 @@ function updateChart(bars, n, interpolation) {
         return i * (chartInnerWidth / n) + leftPadding;
     })
         .attr('height', function(d,i) {
-            return chartHeight - yScale(parseFloat(d[expressed])) + topBottomPadding;
+            return chartHeight - yScale(parseFloat(d[expressed]));
         })
         .attr('y', function(d,i) {
-            return yScale(parseFloat(d[expressed])) + topBottomPadding; 
+            return yScale(parseFloat(d[expressed])); 
         })
         .style('fill', function(d) {
             let value = d[expressed];
@@ -312,7 +372,7 @@ function updateChart(bars, n, interpolation) {
 
     const chartTitle = d3
         .select('.chartTitle')
-        .text('Population Density of ' + expressed[8] + ' (people/km^2)');
+        .text('Population Density of ' + expressed[1] + ' (people/km^2)');
 }
 
 // HIGHLIGHT

@@ -64,7 +64,28 @@ body {background-color: gray}
     stroke-width: 1px;
 }
 
-.prefectures{
+.drawB0 {
+    fill: #fff;
+    stroke: #ccc;
+    stroke-width: 2px;
+}
+.drawB1 {
+    fill: #fff;
+    stroke: #ccc;
+    stroke-width: 2px;
+}
+.drawB3 {
+    fill: #fff;
+    stroke: #ccc;
+    stroke-width: 2px;
+}
+.drawB5 {
+    fill: #fff;
+    stroke: #ccc;
+    stroke-width: 2px;
+}
+
+.prefectures {
     fill: #e6ffff;
     stroke: black;
     stroke: #000;
