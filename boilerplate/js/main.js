@@ -24,7 +24,7 @@
         chartInnerHeight = chartHeight,
         translate = 'translate(' + leftPadding + ')';
 
-    const yScale = d3.scaleLinear()
+    const yScale = d3.scaleSequentialLog()
         .range([chartHeight, 0])
         .domain([51, 6412]);
 
