@@ -10,7 +10,7 @@ body {background-color: black}
 /* graticule */
 
 .gratBackground {
-    fill: #6699FF;
+    fill: none;
 }
 
 .gratLines {
@@ -22,26 +22,26 @@ body {background-color: black}
 
 /* areas */
 
-/* .drawB0 { */
-/*     fill: #fff; */
-/*     stroke: #ccc; */
-/*     stroke-width: 2px; */
-/* } */
-/* .drawB1 { */
-/*     fill: #fff; */
-/*     stroke: #ccc; */
-/*     stroke-width: 2px; */
-/* } */
-/* .drawB3 { */
-/*     fill: #fff; */
-/*     stroke: #ccc; */
-/*     stroke-width: 2px; */
-/* } */
-/* .drawB5 { */
-/*     fill: #fff; */
-/*     stroke: #ccc; */
-/*     stroke-width: 2px; */
-/* } */
+.drawLand {
+    fill: #A9DFBF;
+    stroke-width: 0px;
+}
+.drawB0 {
+    fill: #138D75;
+    stroke-width: 0px;
+}
+.drawB1 {
+    fill: #0E6655;
+    stroke-width: 0px;
+}
+.drawB3 {
+    fill: #0B5345;
+    stroke-width: 0px;
+}
+.drawB5 {
+    fill: #1B2631;
+    stroke-width: 0px;
+}
 
 .prefectures {
     fill: #FFFFFF;

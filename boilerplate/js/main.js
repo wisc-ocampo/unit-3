@@ -27,7 +27,7 @@
 
     const yScale = d3.scaleSequentialLog()
         .range([chartHeight, 0])
-        .domain([51, 6412]);
+        .domain([50, 6412]);
 
     window.onload = setMap();
 
@@ -63,6 +63,7 @@ function setMap(){
 
     const promises = [
         d3.csv('data/JapanPopDensitySimple.csv'),
+        d3.json('data/neLand.topojson'),
         d3.json('data/neB0.topojson'),
         d3.json('data/neB1k.topojson'),
         d3.json('data/neB3k.topojson'),
@@ -76,17 +77,17 @@ function setMap(){
     // implementation
 
         const csvData = data[0],
-            b0 = data[1],
-            b1 = data[2],
-            b3 = data[3],
-            b5 = data[4],
-            japan = data[5];
+            land = data[1]
+            b0 = data[2],
+            b1 = data[3],
+            b3 = data[4],
+            b5 = data[5],
+            japan = data[6];
 
-console.log(b0)
 
-        setGraticule (map, path);
-
-        let neB0 = topojson
+        let neLand = topojson
+            .feature(land, land.objects.neLand),
+            neB0 = topojson
             .feature(b0, b0.objects.neB0),
             neB1 = topojson
             .feature(b1, b1.objects.neB1k),
@@ -95,30 +96,37 @@ console.log(b0)
             neB5 = topojson
             .feature(b5, b5.objects.neB5k),
             japanPrefectures = topojson
-                .feature(japan, japan.objects.neJapan).features;
+            .feature(japan, japan.objects.neJapan).features;
 
         let drawB0 = map
-             .append('path')
-             .datum(neB0)
-             .attr('class', 'drawB0')
-             .attr('d', path),
+            .append('path')
+            .datum(neB0)
+            .attr('class', 'drawB0')
+            .attr('d', path),
             drawB1 = map
-             .append('path')
-             .datum(neB1)
-             .attr('class', 'drawB1')
-             .attr('d', path),
+            .append('path')
+            .datum(neB1)
+            .attr('class', 'drawB1')
+            .attr('d', path),
             drawB3 = map
-             .append('path')
-             .datum(neB3)
-             .attr('class', 'drawB3')
-             .attr('d', path),
+            .append('path')
+            .datum(neB3)
+            .attr('class', 'drawB3')
+            .attr('d', path),
             drawB5 = map
-             .append('path')
-             .datum(neB5)
-             .attr('class', 'drawB5')
-             .attr('d', path);
+            .append('path')
+            .datum(neB5)
+            .attr('class', 'drawB5')
+            .attr('d', path),
+            drawLand = map
+            .append('path')
+            .datum(neLand)
+            .attr('class', 'drawLand')
+            .attr('d', path);
 
-            japanPrefectures = joinData(japanPrefectures, csvData);
+        setGraticule (map, path);
+
+        japanPrefectures = joinData(japanPrefectures, csvData);
 
         const interpolation = makeColorScale(csvData);
         setEnumerationUnits (japanPrefectures, map, path, interpolation);
@@ -204,7 +212,7 @@ function setEnumerationUnits(japanPrefectures, map, path, interpolation){
 
     const desc = prefectures
         .append('desc')
-        .text('{"stroke": "#000", "stroke-width": "0.5px"}');
+        .text(`{"stroke": "#000", "stroke-width": "0.5px"}`);
 };
 
 
@@ -213,7 +221,7 @@ function setEnumerationUnits(japanPrefectures, map, path, interpolation){
 function makeColorScale(data){
 
     const interpolation = d3
-        .scaleSequentialLog([51,6412], d3.interpolateRdPu);
+        .scaleSequentialLog([50,6412], d3.interpolateRdPu);
     return interpolation
 };
 
@@ -258,7 +266,7 @@ function setChart(csvData, interpolation){
 
     const desc = bars
          .append('desc')
-         .text('{"stroke": "none", "stroke-width": "0px"}');
+         .text(`{"stroke": "none", "stroke-width": "0px"}`);
 
     const chartTitle = chart
         .append('text')
@@ -371,7 +379,7 @@ function updateChart(bars, n, interpolation) {
 
     const chartTitle = d3
         .select('.chartTitle')
-        .text('Population Density of ' + expressed[1] + ' (people/km^2)');
+        .text(expressed + `'s Population Density (people/km^2)`);
 }
 
 // HIGHLIGHT
