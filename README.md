@@ -1,6 +1,7 @@
 #### Cartographer: Francisco Ocampo 
 # D3 Lab Project
-![Lab2, D3](https://github.com/wisc-ocampo/unit-3/assets/157857305/9c1f60f1-4a12-4c5e-938a-3435f2ca273d)
+![Ocampo, D3 Lab](https://github.com/wisc-ocampo/unit-3/assets/157857305/f680657f-baeb-4424-930a-250e3b3d4073)
+
 ## overview
 A map showing the population density across Japan's prefectures over the last 70 years. 
 Users are able to change the currently viewed year to have the graph re-express itself to the current year.
