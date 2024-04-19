@@ -31,6 +31,7 @@
 
     window.onload = setMap();
 
+
 // MAP CREATION
 
 function setMap(){
@@ -131,7 +132,6 @@ function setMap(){
         setEnumerationUnits (japanPrefectures, map, path, interpolation);
         setChart(csvData, interpolation);
         createDropdown(csvData);
-        createSupplementary();
     };
 };
 
@@ -426,7 +426,7 @@ function setLabel(props){
         '</h1><b>' + expressed + '</b>';
 
     const infolabel = d3
-        .select('body')/trans
+        .select('body')
         .append('div')
         .attr('class', 'infolabel')
         .attr('id', props.name + '_label')
@@ -458,72 +458,5 @@ function moveLabel(){
         .style('left', x + 'px')
         .style('top', y + 'px');
 };
-
-function createSupplementary(){
-    const content = [`A Visual Representation of Japan's Population Density 
-        (Note: graph is logarithmic!)`], r = 15,
-        width = window.innerWidth * .386;
-
-    const svg = d3
-         .select('svg');
-    
-    const textBox = svg.selectAll('g')
-        .data(content)
-        .enter()
-        .append('g')
-        .attr('transform', function(d,i)
-            { return 'translate (10, 50)';
-            });
-
-    textBox
-        .append('rect')
-        .attr('width', width)
-        .attr('height', 20)
-        .attr('fill', 'white')
-        .attr('opacity', '0.3')
-        
-
-    textBox
-        .append('text')
-        .attr('class', 'supplementaryText')
-        .attr('dy', '1em')
-        .attr('opacity', '1')
-        .text(function(d){
-            return d; });
-
-
-
-    // const width = window.innerWidth * 0.5,
-    //     height = 360;
-    // 
-    // const supplementary = d3
-    //     .select('body')
-    //     .append('svg')
-    //     .attr('class', 'supplementaryText')
-    //     .attr('width', width)
-    //     .attr('width', height)
-    //     .attr('x', width)
-    //     .attr('y', 800)
-    //
-    // const g = supplementary
-    //     .append('g')
-    //     .attr('transform', function(d,i) {
-    //         return 'translate(0,0)';
-    //     });
-    //
-    // const box = g.append('rect')
-    //     .attr('width', 200)
-    //     .attr('height', 100)
-    //     .attr('fill', 'white')
-    //     .attr('opacity', 0.2)
-    //
-    //     g
-    //     .append('text')
-    //     .attr('class', 'box')
-    //     .attr('stroke', '#fff')
-    //     .attr('font-size', '24px')
-    //     .text(`This is a population density map of Japan`);
-}
-
 
 })();
